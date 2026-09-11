@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>English Day Games</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #102a43;
+      --paper: #f7f3ea;
+      --accent: #0e7c66;
+      --accent-deep: #065f4e;
+      --glow: #f4b942;
+      --line: rgba(16, 42, 67, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: "DM Sans", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse 80% 50% at 10% -10%, rgba(14, 124, 102, 0.18), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 90% 0%, rgba(244, 185, 66, 0.22), transparent 50%),
+        linear-gradient(165deg, #f7f3ea 0%, #e8f0ec 45%, #dfe9f2 100%);
+    }
+
+    .page {
+      width: min(920px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 3.5rem 0 4rem;
+    }
+
+    .brand {
+      font-family: "Bricolage Grotesque", sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.4rem, 7vw, 4rem);
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+      margin-bottom: 0.75rem;
+      animation: rise 0.7s ease both;
+    }
+
+    .lede {
+      max-width: 34rem;
+      font-size: 1.05rem;
+      line-height: 1.55;
+      opacity: 0.82;
+      margin-bottom: 2.5rem;
+      animation: rise 0.7s ease 0.08s both;
+    }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-deep);
+      margin-bottom: 1rem;
+      animation: rise 0.7s ease 0.14s both;
+    }
+
+    .games {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .games a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.1rem 1.25rem;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(6px);
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      animation: rise 0.6s ease both;
+    }
+
+    .games a:hover,
+    .games a:focus-visible {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.85);
+      outline: none;
+    }
+
+    .games a strong {
+      font-family: "Bricolage Grotesque", sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .games a span {
+      font-size: 0.9rem;
+      color: var(--accent-deep);
+      white-space: nowrap;
+    }
+
+    .empty, .error {
+      padding: 1.25rem;
+      border: 1px dashed var(--line);
+      background: rgba(255, 255, 255, 0.4);
+      line-height: 1.5;
+    }
+
+    .hint {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.92rem;
+      opacity: 0.75;
+      line-height: 1.5;
+    }
+
+    .hint code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.85em;
+      background: rgba(14, 124, 102, 0.1);
+      padding: 0.1em 0.35em;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <h1 class="brand">English Day</h1>
+    <p class="lede">เลือกเกมด้านล่างเพื่อฝึกภาษาอังกฤษกับเพื่อนๆ — เปิดลิงก์นี้แล้วเล่นได้เลย</p>
+
+    <p class="section-label">Available games</p>
+    <ul class="games" id="games" aria-live="polite"></ul>
+
+    <p class="hint">
+      เพิ่มเกมใหม่: วางไฟล์ <code>.html</code> ลงในโฟลเดอร์ <code>public/games/</code> แล้ว deploy ใหม่ — รายการจะขึ้นอัตโนมัติ
+    </p>
+  </main>
+
+  <script>
+    const list = document.getElementById("games");
+
+    fetch("/api/games")
+      .then((res) => {
+        if (!res.ok) throw new Error("failed");
+        return res.json();
+      })
+      .then(({ games }) => {
+        if (!games.length) {
+          list.innerHTML = '<li class="empty">ยังไม่มีเกม — เพิ่มไฟล์ HTML ใน <code>public/games/</code></li>';
+          return;
+        }
+
+        list.innerHTML = games
+          .map(
+            (game, i) => `
+              <li style="animation-delay: ${0.18 + i * 0.05}s">
+                <a href="${game.href}">
+                  <strong>${game.title}</strong>
+                  <span>เล่น →</span>
+                </a>
+              </li>
+            `
+          )
+          .join("");
+      })
+      .catch(() => {
+        list.innerHTML = '<li class="error">โหลดรายการเกมไม่สำเร็จ ลองรีเฟรชหน้าอีกครั้ง</li>';
+      });
+  </script>
+</body>
+</html>

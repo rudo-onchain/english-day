@@ -1,0 +1,13 @@
+{
+  "name": "english-day",
+  "version": "1.0.0",
+  "private": true,
+  "description": "English Day mini-games hub",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
