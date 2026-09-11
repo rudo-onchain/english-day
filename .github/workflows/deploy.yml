@@ -24,4 +24,10 @@ jobs:
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up --ci --service english-day
+        run: |
+          if [ -z "$RAILWAY_TOKEN" ]; then
+            echo "Missing secret RAILWAY_TOKEN"
+            exit 1
+          fi
+          # Project Token ต้องสร้างจาก environment ที่ต้องการ deploy (เช่น dev)
+          railway up --ci --service english-day

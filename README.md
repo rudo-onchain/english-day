@@ -50,7 +50,8 @@ npm start
 1. สร้างโปรเจกต์บน Railway แล้ว deploy ครั้งแรก (จาก GitHub หรือ `railway up`)
 2. Generate domain ใน Railway แล้วแชร์ลิงก์ให้เพื่อนๆ
 3. สร้าง **Project Token** ใน Railway  
-   Project → Settings → Tokens → New Token (เลือก environment เช่น `production`)
+   Project → Settings → Tokens → New Token  
+   สำคัญ: เลือก environment **`dev`** (เพราะเว็บที่ใช้อยู่คือ `english-day-dev.up.railway.app`)
 4. ใส่ token ใน GitHub Secrets ของ repo นี้  
    Settings → Secrets and variables → Actions → New repository secret  
    - Name: `RAILWAY_TOKEN`  
