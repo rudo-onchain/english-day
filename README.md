@@ -55,6 +55,7 @@ npm start
    Settings → Secrets and variables → Actions → New repository secret  
    - Name: `RAILWAY_TOKEN`  
    - Value: token จาก Railway
+5. Workflow จะ deploy ไปที่ service ชื่อ `english-day` (ถ้าเปลี่ยนชื่อ service แก้ใน `.github/workflows/deploy.yml`)
 
 ### Deploy ด้วย tag (GitHub Actions)
 
