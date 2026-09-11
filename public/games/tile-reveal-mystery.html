@@ -246,6 +246,10 @@
                 <i class="fa-solid fa-play mr-2"></i> Start 10s Timer
             </button>
 
+            <button id="btn-pause-timer" onclick="toggleChallengePause()" class="hidden w-full mb-3 bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-xl font-bold text-xl transition-colors shadow-lg shadow-amber-900/40">
+                <i class="fa-solid fa-pause mr-2"></i> Pause
+            </button>
+
             <div id="challenge-results-btns" class="hidden flex gap-4 mt-2">
                 <button onclick="handleChallengeResult(false)" class="flex-1 bg-red-600 hover:bg-red-500 text-white py-4 rounded-xl font-bold text-lg transition-colors">
                     <i class="fa-solid fa-xmark mr-1"></i> Failed (-2)
@@ -310,6 +314,7 @@
         
         let challengeTimer;
         let timeLeft = 10;
+        let isChallengePaused = false;
 
         // English Challenge Categories
         const categories = [
@@ -320,16 +325,16 @@
             "Food", "Desserts", "Cities"
         ];
 
-        // Database of mystery images and their corresponding words
+        // Database of mystery images and their corresponding words (Everyday English)
         const mysteryItems = [
-            { word: "ELEPHANT", img: "https://image.pollinations.ai/prompt/a%20realistic%20photo%20of%20an%20elephant?width=600&height=600&nologo=true" },
-            { word: "ASTRONAUT", img: "https://image.pollinations.ai/prompt/a%20realistic%20photo%20of%20an%20astronaut%20floating%20in%20space?width=600&height=600&nologo=true" },
-            { word: "VOLCANO", img: "https://image.pollinations.ai/prompt/a%20realistic%20photo%20of%20an%20erupting%20volcano?width=600&height=600&nologo=true" },
-            { word: "GUITAR", img: "https://image.pollinations.ai/prompt/a%20realistic%20photo%20of%20an%20acoustic%20guitar?width=600&height=600&nologo=true" },
-            { word: "PENGUIN", img: "https://image.pollinations.ai/prompt/a%20realistic%20photo%20of%20a%20penguin%20on%20ice?width=600&height=600&nologo=true" },
-            { word: "EIFFEL TOWER", img: "https://image.pollinations.ai/prompt/a%20beautiful%20realistic%20photo%20of%20the%20eiffel%20tower%20in%20paris?width=600&height=600&nologo=true" },
-            { word: "TIGER", img: "https://image.pollinations.ai/prompt/a%20realistic%20photo%20of%20a%20bengal%20tiger%20looking%20at%20camera?width=600&height=600&nologo=true" },
-            { word: "PIZZA", img: "https://image.pollinations.ai/prompt/a%20delicious%20pepperoni%20pizza?width=600&height=600&nologo=true" }
+            { word: "AIRPLANE", img: "/games/images/airplane.jpg" },
+            { word: "GROCERY", img: "/games/images/grocery.jpg" },
+            { word: "PASSPORT", img: "/games/images/passport.jpg" },
+            { word: "RECEIPT", img: "/games/images/receipt.jpg" },
+            { word: "UMBRELLA", img: "/games/images/umbrella.jpg" },
+            { word: "BACKPACK", img: "/games/images/backpack.jpg" },
+            { word: "HEADPHONES", img: "/games/images/headphones.jpg" },
+            { word: "CALENDAR", img: "/games/images/calendar.jpg" }
         ];
 
         let currentItemIndex = 0;
@@ -435,26 +440,45 @@
 
             // Reset UI
             document.getElementById('btn-start-timer').classList.remove('hidden');
+            document.getElementById('btn-pause-timer').classList.add('hidden');
             document.getElementById('challenge-results-btns').classList.add('hidden');
             document.getElementById('gm-tracker').classList.add('hidden');
             resetTrackers();
+            resetPauseButton();
 
             const timerEl = document.getElementById('challenge-timer');
             timerEl.innerText = "10";
             timerEl.classList.remove('timer-warning');
             timeLeft = 10;
+            isChallengePaused = false;
             clearInterval(challengeTimer);
 
             modal.classList.add('active');
         }
 
+        function resetPauseButton() {
+            const btn = document.getElementById('btn-pause-timer');
+            btn.innerHTML = '<i class="fa-solid fa-pause mr-2"></i> Pause';
+            btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-500', 'shadow-emerald-900/40');
+            btn.classList.add('bg-amber-600', 'hover:bg-amber-500', 'shadow-amber-900/40');
+        }
+
         function startChallengeTimer() {
             document.getElementById('btn-start-timer').classList.add('hidden');
+            document.getElementById('btn-pause-timer').classList.remove('hidden');
             document.getElementById('challenge-results-btns').classList.remove('hidden');
             document.getElementById('gm-tracker').classList.remove('hidden');
             
+            isChallengePaused = false;
+            resetPauseButton();
+            runChallengeCountdown();
+        }
+
+        function runChallengeCountdown() {
+            clearInterval(challengeTimer);
             const timerEl = document.getElementById('challenge-timer');
-            
+            timerEl.innerText = timeLeft;
+
             challengeTimer = setInterval(() => {
                 timeLeft--;
                 timerEl.innerText = timeLeft;
@@ -466,12 +490,35 @@
                 if (timeLeft <= 0) {
                     clearInterval(challengeTimer);
                     timerEl.innerText = "TIME'S UP!";
+                    document.getElementById('btn-pause-timer').classList.add('hidden');
+                    isChallengePaused = false;
                 }
             }, 1000);
         }
 
+        function toggleChallengePause() {
+            if (timeLeft <= 0) return;
+
+            const btn = document.getElementById('btn-pause-timer');
+            const timerEl = document.getElementById('challenge-timer');
+
+            if (!isChallengePaused) {
+                isChallengePaused = true;
+                clearInterval(challengeTimer);
+                btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i> Resume';
+                btn.classList.remove('bg-amber-600', 'hover:bg-amber-500', 'shadow-amber-900/40');
+                btn.classList.add('bg-emerald-600', 'hover:bg-emerald-500', 'shadow-emerald-900/40');
+                timerEl.innerText = timeLeft + ' ⏸';
+            } else {
+                isChallengePaused = false;
+                resetPauseButton();
+                runChallengeCountdown();
+            }
+        }
+
         function handleChallengeResult(isSuccess) {
             clearInterval(challengeTimer);
+            isChallengePaused = false;
             closeModals();
             
             if (!isSuccess) {
