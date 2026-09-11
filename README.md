@@ -45,9 +45,31 @@ npm start
 
 โปรเจกต์พร้อม deploy ด้วย `npm start` อยู่แล้ว
 
-1. สร้างโปรเจกต์ใหม่บน Railway จาก repo นี้
-2. Railway จะรัน `npm start` ตาม `railway.toml`
-3. Generate domain แล้วแชร์ลิงก์ให้เพื่อนๆ
+### ตั้งค่าครั้งแรก
+
+1. สร้างโปรเจกต์บน Railway แล้ว deploy ครั้งแรก (จาก GitHub หรือ `railway up`)
+2. Generate domain ใน Railway แล้วแชร์ลิงก์ให้เพื่อนๆ
+3. สร้าง **Project Token** ใน Railway  
+   Project → Settings → Tokens → New Token (เลือก environment เช่น `production`)
+4. ใส่ token ใน GitHub Secrets ของ repo นี้  
+   Settings → Secrets and variables → Actions → New repository secret  
+   - Name: `RAILWAY_TOKEN`  
+   - Value: token จาก Railway
+
+### Deploy ด้วย tag (GitHub Actions)
+
+ติด tag แล้ว push — workflow จะ deploy ให้อัตโนมัติ
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+รองรับ pattern `v*` เช่น `v1.0.0`, `v1.1.0`
+
+ดูสถานะได้ที่ GitHub → Actions → **Deploy to Railway**
+
+หรือกด **Run workflow** ด้วยมือจากหน้า Actions ได้ (workflow_dispatch)
 
 ## เกมที่มีอยู่
 
